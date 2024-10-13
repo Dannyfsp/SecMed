@@ -10,6 +10,6 @@ import lombok.*;
 @Builder
 public class UserLoginResponse {
     private String token;
-//    private String refreshToken;
+    private String refreshToken;
     private String email;
 }

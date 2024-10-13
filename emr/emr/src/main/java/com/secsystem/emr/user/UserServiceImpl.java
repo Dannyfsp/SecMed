@@ -104,11 +104,12 @@ public class UserServiceImpl implements UserService {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
         var jwt = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
 
         return UserLoginResponse.builder()
                 .email(user.getEmail())
                 .token(jwt)
-//                .refreshToken(refreshToken.getRefreshToken())
+                .refreshToken(refreshToken)
                 .build();
 
     }

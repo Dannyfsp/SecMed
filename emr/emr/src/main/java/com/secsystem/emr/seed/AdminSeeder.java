@@ -34,12 +34,10 @@ public class AdminSeeder implements ApplicationListener<ContextRefreshedEvent> {
 
     private void createSuperAdministrator() {
         String email = "super.admin@email.com";
-
-        // Check if the user already exists
         Optional<User> optionalUser = userRepository.findByEmail(email);
         Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.ADMIN);
         if (optionalUser.isPresent()) {
-            return; // User already exists, no need to create
+            return;
         }
 
         if (optionalRole.isEmpty() || optionalUser.isPresent()) {
@@ -50,13 +48,11 @@ public class AdminSeeder implements ApplicationListener<ContextRefreshedEvent> {
                 .firstName("Super")
                 .lastName("Admin")
                 .email(email)
-                .password(passwordEncoder.encode("1234567")) // Encode the password
+                .password(passwordEncoder.encode("1234567"))
                 .phoneNumber("1234567890")
                 .age(30)
                 .role(optionalRole.get())
                 .build();
-
-        // Save the user
         userRepository.save(superAdmin);
     }
 }

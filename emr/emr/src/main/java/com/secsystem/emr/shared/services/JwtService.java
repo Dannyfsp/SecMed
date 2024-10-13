@@ -2,6 +2,7 @@ package com.secsystem.emr.shared.services;
 
 
 
+import com.secsystem.emr.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -23,11 +24,16 @@ public class JwtService {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
-    @Value("${security.jwt.secret-key}")
+    @Value("${security.jwt.refresh-secret-key}")
     private String refreshTokenSecretKey;
 
     @Value("${security.jwt.expiration-time}")
     private long expirationTime;
+
+    @Value("${security.jwt.refresh-expiration-time}")
+    private long refreshExpirationTime;
+
+
 
 
     // extract username from JWT
@@ -54,10 +60,13 @@ public class JwtService {
                 .getBody();
     }
 
-    // decode and get the key
     private Key getSignInKey() {
-        // decode SECRET_KEY
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private Key getRefreshSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(refreshTokenSecretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -71,13 +80,30 @@ public class JwtService {
             UserDetails userDetails
     ) {
         Date expirationDate = new Date(System.currentTimeMillis() + expirationTime);
+        User user = (User) userDetails;
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
+                .claim("id", user.getId())
+                .claim("email", user.getUsername())
+                .claim("role", user.getRole().getName())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(expirationDate)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Date refreshExpirationDate = new Date(System.currentTimeMillis() + refreshExpirationTime);
+        User user = (User) userDetails;
+        return Jwts
+                .builder()
+                .setSubject(user.getUsername())
+                .claim("id", user.getId())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(refreshExpirationDate)
+                .signWith(getRefreshSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
