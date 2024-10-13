@@ -1,4 +1,4 @@
-package com.secsystem.emr.patientusers.dto;
+package com.secsystem.emr.patient.dto;
 
 
 import lombok.*;

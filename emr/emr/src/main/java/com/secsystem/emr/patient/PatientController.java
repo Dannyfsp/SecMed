@@ -1,7 +1,9 @@
-package com.secsystem.emr.patientusers;
+package com.secsystem.emr.patient;
 
 
-import com.secsystem.emr.patientusers.dto.PatientSignUpRequest;
+import com.secsystem.emr.patient.dto.PatientSignUpRequest;
+import com.secsystem.emr.utils.constants.responsehandler.ResponseHandler;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +22,13 @@ public class PatientController {
 
     @GetMapping("/test")
     public String testPatient(){
-        return patientService.patientTest();
+        return patientService.healthCheck();
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Patient> patientSignUp(@RequestBody PatientSignUpRequest request){
+    public ResponseEntity<?> patientSignUp(@RequestBody @Valid PatientSignUpRequest request){
         Patient patient = patientService.patientSignUp(request);
-        return new ResponseEntity<>(patient, HttpStatus.CREATED);
+        return ResponseHandler.responseBuilder("patient created", HttpStatus.CREATED, patient);
     }
 
     @GetMapping("/all")

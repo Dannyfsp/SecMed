@@ -1,4 +1,4 @@
-package com.secsystem.emr.patientusers;
+package com.secsystem.emr.patient;
 
 
 import jakarta.persistence.*;
