@@ -7,9 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,6 +20,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 
+import java.security.SignatureException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -37,6 +40,15 @@ public class GlobalExceptionHandler {
         logger.error("Authentication Error: ", ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Authentication failed. Please check your credentials.");
     }
+
+    @ExceptionHandler(SignatureException.class)
+    public ProblemDetail handleSignatureException(SignatureException ex) {
+        logger.error("JWT Signature Exception: ", ex);
+        String errorMessage = "Invalid JWT signature. Authentication failed. Reason: " + ex.getMessage();
+
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, errorMessage);
+    }
+
 
     @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail handleBadCredentialsException(BadCredentialsException ex) {

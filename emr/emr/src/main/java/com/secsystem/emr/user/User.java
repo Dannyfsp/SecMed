@@ -4,7 +4,9 @@ package com.secsystem.emr.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.secsystem.emr.shared.models.Role;
 import com.secsystem.emr.shared.models.RoleEnum;
+import com.secsystem.emr.utils.constants.validators.ValidDateOfBirth;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -57,6 +60,10 @@ public class User implements UserDetails {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @NotNull(message = "dateOfBirth should not be null")
+    @ValidDateOfBirth(minAge = 18)
+    private LocalDate dateOfBirth;
 
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)

@@ -1,0 +1,34 @@
+             # Ignore Maven/Gradle build directories
+             target/
+             build/
+
+             # Ignore temporary files, logs, and other unnecessary files
+             *.log
+             *.tmp
+             *.bak
+             *.swp
+
+             # Ignore IDE and editor files
+             *.idea/
+             *.vscode/
+             *.project
+             *.classpath
+             *.settings/
+             .DS_Store
+
+             # Ignore OS-specific files
+             Thumbs.db
+             *.DS_Store
+
+             # Ignore dependencies or library caches
+             **/.mvn/
+             **/node_modules/
+             **/.gradle/
+             **/.cache/
+
+#
+
+             # Ignore test-related files
+             **/test-output/
+             **/surefire-reports/
+             **/jacoco/
