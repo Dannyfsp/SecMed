@@ -1,4 +1,4 @@
-package com.secsystem.emr.patient.dto;
+package com.secsystem.emr.user.dto.request;
 
 
 import lombok.*;
@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatientLoginRequest {
+public class LoginRequest {
     private String email;
     private String password;
 }

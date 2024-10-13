@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: emr-prod
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/emr_sec?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false}
+    username: ${DB_USERNAME:produser}
+    password: ${DB_PASSWORD:prodpass}
+    driver-class-name: ${DB_DRIVER_CLASS_NAME:com.mysql.cj.jdbc.Driver}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    format-sql: false
+    show-sql: false
+    open-in-view: false
+
+security:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY:prod_secret_key}
+    expiration-time: ${JWT_EXPIRATION_TIME:3600000}
+
+server:
+  port: ${SERVER_PORT:80}

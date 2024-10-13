@@ -1,0 +1,70 @@
+spring:
+  application:
+    name: emr-dev
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/emr_sec?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:Bassguitar1}
+    driver-class-name: ${DB_DRIVER_CLASS_NAME:com.mysql.cj.jdbc.Driver}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    format-sql: true
+    show-sql: true
+    open-in-view: true
+
+security:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY:4bb6d1dfbafb64a681139d1586b6f1160d18159afd57c8c79136d7490630407c}
+    expiration-time: ${JWT_EXPIRATION_TIME:3600000}
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  server:
+    error:
+      include-message: always
+
+
+cloudinary:
+  cloud-name: drsimple
+  api-key: 934959128785944
+  api-secret: sCnORU-HS1oDaFMuG8EPIvUpKkI
+
+  servlet:
+    multipart:
+      location: classpath:/static/images
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
+      file-size-threshold: 2KB
+
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 6961ac672067ee
+    password: 4c864f587f3462
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+api:
+  prefix: /api/v1
+
