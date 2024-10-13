@@ -2,7 +2,8 @@ package com.secsystem.emr.user;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.secsystem.emr.shared.UserRole;
+import com.secsystem.emr.shared.models.Role;
+import com.secsystem.emr.shared.models.RoleEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
@@ -57,12 +58,14 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
+    @OneToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
+    @PrimaryKeyJoinColumn
+    private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(role.getName().toString()));
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.secsystem.emr.seed;
 
-import com.secsystem.emr.shared.UserRole;
+import com.secsystem.emr.shared.models.Role;
+import com.secsystem.emr.shared.models.RoleEnum;
+import com.secsystem.emr.shared.repository.RoleRepository;
 import com.secsystem.emr.user.User;
 import com.secsystem.emr.user.UserRepository;
 import org.springframework.context.ApplicationListener;
@@ -14,13 +16,15 @@ import java.util.Optional;
 public class AdminSeeder implements ApplicationListener<ContextRefreshedEvent> {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     public AdminSeeder(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder, RoleRepository roleRepository
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -33,19 +37,23 @@ public class AdminSeeder implements ApplicationListener<ContextRefreshedEvent> {
 
         // Check if the user already exists
         Optional<User> optionalUser = userRepository.findByEmail(email);
+        Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.ADMIN);
         if (optionalUser.isPresent()) {
             return; // User already exists, no need to create
         }
 
-        // Create a new super admin user if none exists
+        if (optionalRole.isEmpty() || optionalUser.isPresent()) {
+            return;
+        }
+
         User superAdmin = User.builder()
                 .firstName("Super")
                 .lastName("Admin")
                 .email(email)
                 .password(passwordEncoder.encode("1234567")) // Encode the password
-                .phoneNumber("1234567890") // Add a phone number (required)
-                .age(30) // Set an appropriate age
-                .role(UserRole.ADMIN) // Set role to SUPER_ADMIN
+                .phoneNumber("1234567890")
+                .age(30)
+                .role(optionalRole.get())
                 .build();
 
         // Save the user

@@ -1,6 +1,7 @@
 package com.secsystem.emr.config.security;
 
 
+import com.secsystem.emr.shared.models.RoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +49,9 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITE_LIST_URL).permitAll()
+                        //.requestMatchers("/api/v1/nurse/**").hasAnyRole(RoleEnum.NURSE.name(), RoleEnum.NURSE.name())
+                        //.requestMatchers(GET, "/api/v1/management/**").hasAnyAuthority("ADMIN_READ", "MANAGER_READ")
+                        //.requestMatchers(POST, "/api/v1/management/**").hasAnyAuthority("ADMIN_CREATE", "MANAGER_CREATE")
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(session -> session

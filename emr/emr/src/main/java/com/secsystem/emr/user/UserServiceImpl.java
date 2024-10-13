@@ -3,8 +3,11 @@ package com.secsystem.emr.user;
 
 import com.secsystem.emr.exceptions.ConflictException;
 import com.secsystem.emr.exceptions.EntityNotFoundException;
-import com.secsystem.emr.shared.UserRole;
+import com.secsystem.emr.shared.models.Role;
+import com.secsystem.emr.shared.models.RoleEnum;
+import com.secsystem.emr.shared.repository.RoleRepository;
 import com.secsystem.emr.shared.services.JwtService;
+import com.secsystem.emr.user.dto.request.ChangePasswordRequest;
 import com.secsystem.emr.user.dto.request.LoginRequest;
 import com.secsystem.emr.user.dto.request.SignUpRequest;
 import com.secsystem.emr.user.dto.response.UserLoginResponse;
@@ -18,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Optional;
 
 
@@ -26,12 +30,14 @@ public class UserServiceImpl implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
@@ -47,6 +53,13 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new ConflictException("A patient with this email already exists.");
         }
+
+        Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.USER);
+
+        if (optionalRole.isEmpty()) {
+            throw new EntityNotFoundException("Role not found");
+        }
+
         User patientToSave = User
                 .builder()
                 .email(request.getEmail())
@@ -55,7 +68,7 @@ public class UserServiceImpl implements UserService {
                 .lastName(request.getLastName())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phoneNumber(request.getPhoneNumber())
-                .role(UserRole.USER)
+                .role(optionalRole.get())
                 .build();
 
         logger.info("User save successfully: {}", patientToSave.getEmail());
@@ -63,7 +76,7 @@ public class UserServiceImpl implements UserService {
         UserSignUpResponse response = UserSignUpResponse
                 .builder()
                 .email(savedUser.getEmail())
-                .role(savedUser.getRole().toString())
+                .role(savedUser.getRole().getName().toString())
                 .id(savedUser.getId())
                 .build();
 
@@ -98,6 +111,20 @@ public class UserServiceImpl implements UserService {
 //                .refreshToken(refreshToken.getRefreshToken())
                 .build();
 
+    }
+
+    @Override
+    public void changePassword(ChangePasswordRequest changePasswordRequest, Principal principal) {
+        Optional<User> optionalUser = userRepository.findByEmail(principal.getName());
+        if (optionalUser.isEmpty()) {
+            throw new EntityNotFoundException("User not found");
+        }
+        User user = optionalUser.get();
+        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid credentials");
+        }
+        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.save(user);
     }
 
 }
