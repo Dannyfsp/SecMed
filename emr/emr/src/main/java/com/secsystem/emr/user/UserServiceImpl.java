@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService {
         User patientToSave = User
                 .builder()
                 .email(request.getEmail())
+                .age(request.getAge())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .password(passwordEncoder.encode(request.getPassword()))

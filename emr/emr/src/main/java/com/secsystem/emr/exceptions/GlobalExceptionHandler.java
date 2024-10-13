@@ -1,6 +1,7 @@
 package com.secsystem.emr.exceptions;
 
 
+import jakarta.validation.ConstraintViolationException;
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,12 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleForbiddenException(UserForbiddenException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
     }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ProblemDetail handleEntityNotValidConstraints(ConstraintViolationException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, (ex.getConstraintViolations().iterator().next().getMessage()));
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {

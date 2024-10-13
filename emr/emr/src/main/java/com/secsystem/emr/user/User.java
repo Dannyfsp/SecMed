@@ -4,6 +4,7 @@ package com.secsystem.emr.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.secsystem.emr.shared.UserRole;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -43,6 +44,10 @@ public class User implements UserDetails {
 
     @Column(nullable = false, name = "phone_number")
     private String phoneNumber;
+
+    @Column(nullable = false, name = "age")
+    @Positive(message = "age must be a positive number")
+    private Integer age;
 
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")

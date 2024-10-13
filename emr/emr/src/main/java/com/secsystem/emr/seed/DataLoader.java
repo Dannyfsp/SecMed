@@ -1,4 +1,4 @@
-package com.secsystem.emr.utils.constants;
+package com.secsystem.emr.seed;
 
 import com.secsystem.emr.shared.UserRole;
 import com.secsystem.emr.user.User;
@@ -19,14 +19,15 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() == 0) {
-            for (int i = 1; i <= 100; i++) {
+        if (userRepository.count() == 0 && userRepository.findByRole(UserRole.ADMIN).isEmpty()) {
+            for (int i = 1; i <= 10; i++) {
                 User user = new User();
                 user.setLastName("user" + i);
                 user.setFirstName("user" + i);
                 user.setRole(UserRole.USER);
                 user.setPhoneNumber(i + "90" + i + "2323455");
                 user.setEmail("user" + i + "@gmail.com");
+                user.setAge(2);
                 user.setPassword(passwordEncoder.encode("password" + i));
                 userRepository.save(user);
             }
