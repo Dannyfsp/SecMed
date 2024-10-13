@@ -1,6 +1,7 @@
 package com.secsystem.emr.user.dto.request;
 
 
+import com.secsystem.emr.utils.constants.validators.CorrectNumber;
 import com.secsystem.emr.utils.constants.validators.UniquePhone;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -30,6 +31,7 @@ public class SignUpRequest {
 
     @NotBlank(message = "Password is required")
     @UniquePhone
+    @CorrectNumber
     private String phoneNumber;
 
     @Positive(message = "Age must be positive")
