@@ -61,8 +61,11 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+
+    @Column(name = "is_verified")
+    private Boolean IsVerified;
+
     @NotNull(message = "dateOfBirth should not be null")
-    @ValidDateOfBirth(minAge = 18)
     private LocalDate dateOfBirth;
 
     @OneToOne(cascade = CascadeType.REMOVE)

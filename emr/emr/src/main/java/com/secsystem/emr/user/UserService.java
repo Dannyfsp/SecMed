@@ -8,7 +8,6 @@ import com.secsystem.emr.user.dto.response.UserLoginResponse;
 import com.secsystem.emr.user.dto.response.UserSignUpResponse;
 
 import java.security.Principal;
-import java.util.List;
 
 
 public interface UserService {
@@ -16,4 +15,5 @@ public interface UserService {
     UserSignUpResponse userSignUp(SignUpRequest request);
     UserLoginResponse loginUser(LoginRequest request);
     void changePassword(ChangePasswordRequest changePasswordRequest, Principal principal);
+    User findByEmail(String email);
 }

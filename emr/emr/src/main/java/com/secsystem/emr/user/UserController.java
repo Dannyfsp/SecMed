@@ -1,7 +1,10 @@
 package com.secsystem.emr.user;
 
 
+import com.secsystem.emr.filters.VerifiedUserOnly;
 import com.secsystem.emr.shared.SecurityUtils;
+import com.secsystem.emr.shared.dto.VerifyOtpRequest;
+import com.secsystem.emr.shared.services.OtpService;
 import com.secsystem.emr.user.dto.request.ChangePasswordRequest;
 import com.secsystem.emr.user.dto.request.LoginRequest;
 import com.secsystem.emr.user.dto.request.SignUpRequest;
@@ -24,9 +27,11 @@ public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private final OtpService otpService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, OtpService otpService) {
         this.userService = userService;
+        this.otpService = otpService;
     }
 
     @GetMapping("/test")
@@ -39,6 +44,15 @@ public class UserController {
     public ResponseEntity<?> userSignUp(@RequestBody @Valid SignUpRequest request){
         UserSignUpResponse response = userService.userSignUp(request);
         return ResponseHandler.responseBuilder("user created", HttpStatus.CREATED, response);
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(
+            @RequestBody VerifyOtpRequest verifyOtpRequest) {
+        {
+            otpService.verifyOtp(verifyOtpRequest);
+            return ResponseHandler.responseBuilder("user account verified", HttpStatus.OK, null);
+        }
     }
 
     @PostMapping("/login")
@@ -57,6 +71,7 @@ public class UserController {
 
 
     @PostMapping("/change-password")
+    @VerifiedUserOnly
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> changePassword(
             @RequestBody ChangePasswordRequest changePasswordRequest) {
@@ -65,5 +80,8 @@ public class UserController {
             return ResponseHandler.responseBuilder("user password changed successfully", HttpStatus.OK, null);
         }
     }
+
+
+
 
 }

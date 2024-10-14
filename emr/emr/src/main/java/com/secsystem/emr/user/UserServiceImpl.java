@@ -87,11 +87,19 @@ public class UserServiceImpl implements UserService {
         String subject = "Please verify your email";
         String text = "Your otp is  " + otpCode;
 
-        OtpRequest otpToSave = OtpRequest.builder().email(userToSave.getEmail()).otpCode(otpCode).purpose(OtpEnum.USER_REGISTRATION).build();
+        OtpRequest otpToSave = OtpRequest.builder()
+                .email(userToSave.getEmail())
+                .otpCode(passwordEncoder.encode(otpCode))
+                .purpose(OtpEnum.USER_REGISTRATION)
+                .build();
         otpService.saveUserOtp(otpToSave);
         emailService.sendEmail(userToSave.getEmail(), subject, text);
 
-        return UserSignUpResponse.builder().email(savedUser.getEmail()).role(savedUser.getRole().getName().toString()).id(savedUser.getId()).build();
+        return UserSignUpResponse.builder()
+                .email(savedUser.getEmail())
+                .role(savedUser.getRole().getName().toString())
+                .id(savedUser.getId())
+                .build();
     }
 
     @Override
@@ -127,6 +135,12 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepository.save(user);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
     }
 
 }

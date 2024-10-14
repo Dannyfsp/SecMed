@@ -49,7 +49,6 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, errorMessage);
     }
 
-
     @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail handleBadCredentialsException(BadCredentialsException ex) {
         logger.error("Invalid Credentials: ", ex);
@@ -62,8 +61,13 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "No authentication credentials provided.");
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ProblemDetail handleBadRequestException(BadRequestException ex) {
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ProblemDetail handleAuthorizedFilterException(UnAuthorizedException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(CustomBadRequestException.class)
+    public ProblemDetail handleBadRequestException(CustomBadRequestException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
