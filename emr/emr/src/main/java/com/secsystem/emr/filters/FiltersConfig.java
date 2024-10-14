@@ -27,14 +27,5 @@ public class    FiltersConfig {
     }
 
 
-    @Bean
-    public FilterRegistrationBean<UserVerificationFilter> userVerificationFilter() {
-        FilterRegistrationBean<UserVerificationFilter> registrationBean = new FilterRegistrationBean<>();
-
-        registrationBean.setFilter(new UserVerificationFilter(userService));
-        registrationBean.addUrlPatterns("/api/protected/*");
-
-        return registrationBean;
-    }
 
 }

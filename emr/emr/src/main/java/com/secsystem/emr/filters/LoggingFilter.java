@@ -28,10 +28,7 @@ public class LoggingFilter implements Filter {
             log.info("Client IP: {}, Request URL: {}, Method: {}", clientIP, httpServletRequest.getRequestURL(), httpServletRequest.getMethod());
         }
 
-        // pre methods call stamps
         chain.doFilter(request, response);
-
-        // post method calls stamps
         if ( this.shouldLogRequest(httpServletRequest) ) {
             log.info("Response status: {}", httpServletResponse.getStatus());
         }

@@ -3,6 +3,7 @@ package com.secsystem.emr.shared.services.impl;
 import com.secsystem.emr.shared.services.EmailService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
@@ -16,6 +17,7 @@ public class EmailServiceImpl implements EmailService {
         this.javaMailSender = javaMailSender;
     }
 
+    @Async
     @Override
     public void sendEmail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
