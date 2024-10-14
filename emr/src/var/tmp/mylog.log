@@ -6955,3 +6955,37 @@ java.lang.RuntimeException: User is not verified
 2024-10-14T14:08:34.594+01:00  INFO 9608 --- [emr-dev] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2024-10-14T14:08:34.597+01:00  INFO 9608 --- [emr-dev] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariCP - Shutdown initiated...
 2024-10-14T14:08:34.601+01:00  INFO 9608 --- [emr-dev] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariCP - Shutdown completed.
+2024-10-14T14:08:40.031+01:00  INFO 27404 --- [emr-dev] [main] com.secsystem.emr.EmrApplication         : Starting EmrApplication using Java 22.0.1 with PID 27404 (C:\Users\CAPTAIN ENJOY\Downloads\SecMed\emr\emr\target\classes started by CAPTAIN ENJOY in C:\Users\CAPTAIN ENJOY\Downloads\SecMed\emr)
+2024-10-14T14:08:40.034+01:00  INFO 27404 --- [emr-dev] [main] com.secsystem.emr.EmrApplication         : The following 1 profile is active: "dev"
+2024-10-14T14:08:41.452+01:00  INFO 27404 --- [emr-dev] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-14T14:08:41.570+01:00  INFO 27404 --- [emr-dev] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 111 ms. Found 4 JPA repository interfaces.
+2024-10-14T14:08:42.721+01:00  INFO 27404 --- [emr-dev] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-10-14T14:08:42.736+01:00  INFO 27404 --- [emr-dev] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-14T14:08:42.737+01:00  INFO 27404 --- [emr-dev] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-14T14:08:42.830+01:00  INFO 27404 --- [emr-dev] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-10-14T14:08:42.831+01:00  INFO 27404 --- [emr-dev] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2743 ms
+2024-10-14T14:08:43.117+01:00  INFO 27404 --- [emr-dev] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-14T14:08:43.189+01:00  INFO 27404 --- [emr-dev] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-14T14:08:43.222+01:00  INFO 27404 --- [emr-dev] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-14T14:08:43.518+01:00  INFO 27404 --- [emr-dev] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-14T14:08:43.546+01:00  INFO 27404 --- [emr-dev] [main] com.zaxxer.hikari.HikariDataSource       : HikariCP - Starting...
+2024-10-14T14:08:43.680+01:00  INFO 27404 --- [emr-dev] [main] com.zaxxer.hikari.pool.HikariPool        : HikariCP - Added connection com.mysql.cj.jdbc.ConnectionImpl@5606d537
+2024-10-14T14:08:43.682+01:00  INFO 27404 --- [emr-dev] [main] com.zaxxer.hikari.HikariDataSource       : HikariCP - Start completed.
+2024-10-14T14:08:44.817+01:00  INFO 27404 --- [emr-dev] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-14T14:08:44.880+01:00  INFO 27404 --- [emr-dev] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-14T14:08:45.418+01:00  INFO 27404 --- [emr-dev] [main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2024-10-14T14:08:45.419+01:00  WARN 27404 --- [emr-dev] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2024-10-14T14:08:47.481+01:00  INFO 27404 --- [emr-dev] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 16 endpoints beneath base path '/actuator'
+2024-10-14T14:08:48.086+01:00  WARN 27404 --- [emr-dev] [main] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2024-10-14T14:08:48.688+01:00  INFO 27404 --- [emr-dev] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2024-10-14T14:08:48.704+01:00  INFO 27404 --- [emr-dev] [main] com.secsystem.emr.EmrApplication         : Started EmrApplication in 9.281 seconds (process running for 10.132)
+2024-10-14T14:08:49.607+01:00  INFO 27404 --- [emr-dev] [RMI TCP Connection(2)-172.20.10.4] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-10-14T14:09:12.651+01:00  INFO 27404 --- [emr-dev] [http-nio-8080-exec-1] c.secsystem.emr.filters.LoggingFilter    : Client IP: 0:0:0:0:0:0:0:1, Request URL: http://localhost:8080/api/v1/auth/register, Method: POST
+2024-10-14T14:09:12.867+01:00  INFO 27404 --- [emr-dev] [http-nio-8080-exec-1] com.secsystem.emr.user.UserServiceImpl   : User save successfully: yomi@gmail.com
+2024-10-14T14:09:13.025+01:00  INFO 27404 --- [emr-dev] [http-nio-8080-exec-1] c.secsystem.emr.filters.LoggingFilter    : Response status: 201
+2024-10-14T14:16:08.994+01:00  WARN 27404 --- [emr-dev] [HikariCP housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariCP - Thread starvation or clock leap detected (housekeeper delta=1m25s120ms240µs600ns).
+2024-10-14T14:18:54.596+01:00  INFO 27404 --- [emr-dev] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2024-10-14T14:18:54.602+01:00  INFO 27404 --- [emr-dev] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2024-10-14T14:18:54.609+01:00  INFO 27404 --- [emr-dev] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-14T14:18:54.612+01:00  INFO 27404 --- [emr-dev] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariCP - Shutdown initiated...
+2024-10-14T14:18:54.617+01:00  INFO 27404 --- [emr-dev] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariCP - Shutdown completed.
