@@ -5,9 +5,7 @@ import com.secsystem.emr.filters.VerifiedUserOnly;
 import com.secsystem.emr.shared.SecurityUtils;
 import com.secsystem.emr.shared.dto.VerifyOtpRequest;
 import com.secsystem.emr.shared.services.OtpService;
-import com.secsystem.emr.user.dto.request.ChangePasswordRequest;
-import com.secsystem.emr.user.dto.request.LoginRequest;
-import com.secsystem.emr.user.dto.request.SignUpRequest;
+import com.secsystem.emr.user.dto.request.*;
 import com.secsystem.emr.user.dto.response.UserLoginResponse;
 import com.secsystem.emr.user.dto.response.UserSignUpResponse;
 import com.secsystem.emr.utils.constants.responsehandler.ResponseHandler;
@@ -78,6 +76,25 @@ public class UserController {
         {
             userService.changePassword(changePasswordRequest, SecurityUtils.getAuthentication());
             return ResponseHandler.responseBuilder("user password changed successfully", HttpStatus.OK, null);
+        }
+    }
+
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(
+            @RequestBody @Valid ForgotPasswordRequest request) {
+        {
+            userService.forgotPassword(request);
+            return ResponseHandler.responseBuilder("password sent successfully", HttpStatus.OK, null);
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestBody @Valid ResetPasswordRequest request) {
+        {
+            userService.resetPassword(request);
+            return ResponseHandler.responseBuilder("password reset successfully", HttpStatus.OK, null);
         }
     }
 

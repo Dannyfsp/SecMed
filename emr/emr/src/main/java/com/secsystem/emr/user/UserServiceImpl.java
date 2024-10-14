@@ -2,20 +2,21 @@ package com.secsystem.emr.user;
 
 
 import com.secsystem.emr.exceptions.ConflictException;
+import com.secsystem.emr.exceptions.CustomBadRequestException;
 import com.secsystem.emr.exceptions.EntityNotFoundException;
 import com.secsystem.emr.shared.dto.OtpRequest;
 import com.secsystem.emr.shared.generators.OtpGen;
+import com.secsystem.emr.shared.models.Otp;
 import com.secsystem.emr.shared.models.OtpEnum;
 import com.secsystem.emr.shared.models.Role;
 import com.secsystem.emr.shared.models.RoleEnum;
+import com.secsystem.emr.shared.repository.OtpRepository;
 import com.secsystem.emr.shared.repository.RoleRepository;
 import com.secsystem.emr.shared.services.EmailService;
 import com.secsystem.emr.shared.services.JwtService;
 import com.secsystem.emr.shared.services.OtpService;
 import com.secsystem.emr.shared.services.RateLimitingService;
-import com.secsystem.emr.user.dto.request.ChangePasswordRequest;
-import com.secsystem.emr.user.dto.request.LoginRequest;
-import com.secsystem.emr.user.dto.request.SignUpRequest;
+import com.secsystem.emr.user.dto.request.*;
 import com.secsystem.emr.user.dto.response.UserLoginResponse;
 import com.secsystem.emr.user.dto.response.UserSignUpResponse;
 import org.slf4j.Logger;
@@ -43,8 +44,9 @@ public class UserServiceImpl implements UserService {
     private final RateLimitingService rateLimitingService;
     private final JwtService jwtService;
     private final OtpService otpService;
+    private final OtpRepository otpRepository;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, EmailService emailService, RateLimitingService rateLimitingService, JwtService jwtService, OtpService otpService) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, EmailService emailService, RateLimitingService rateLimitingService, JwtService jwtService, OtpService otpService, OtpRepository otpRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -53,6 +55,7 @@ public class UserServiceImpl implements UserService {
         this.rateLimitingService = rateLimitingService;
         this.jwtService = jwtService;
         this.otpService = otpService;
+        this.otpRepository = otpRepository;
     }
 
     @Override
@@ -82,7 +85,7 @@ public class UserServiceImpl implements UserService {
         logger.info("User save successfully: {}", userToSave.getEmail());
         User savedUser = userRepository.save(userToSave);
 
-        String otpCode = OtpGen.generateOtp();
+        String otpCode = OtpGen.generateSignUpOtp();
 
         String subject = "Please verify your email";
         String text = "Your otp is  " + otpCode;
@@ -142,5 +145,56 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
     }
+
+    @Override
+    public void forgotPassword(ForgotPasswordRequest request) {
+        Optional<User> user = userRepository.findByEmail(request.getEmail());
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException("User with this email does not exist");
+        }
+
+        String forgotPasswordCode = OtpGen.generateForgotPasswordOtp();
+        String subject = "Forgot Password";
+        String text = "Your otp is  " + forgotPasswordCode;
+        String userEmail = user.get().getEmail();
+        OtpRequest otpToSave = OtpRequest.builder()
+                .email(userEmail)
+                .otpCode(passwordEncoder.encode(forgotPasswordCode))
+                .purpose(OtpEnum.FORGOT_PASSWORD)
+                .build();
+        otpService.saveUserOtp(otpToSave);
+        emailService.sendEmail(userEmail, subject, text);
+
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordRequest request) {
+        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+        if (userOptional.isEmpty()) {
+            throw new EntityNotFoundException("User with this email does not exist");
+        }
+        User user = userOptional.get();
+
+        Optional<Otp> storedOtp = otpRepository.findByEmailAndPurpose(user.getEmail(), String.valueOf(OtpEnum.FORGOT_PASSWORD));
+        if (storedOtp.isEmpty()) {
+            throw new CustomBadRequestException("Invalid or expired OTP");
+        }
+
+        Otp otp = storedOtp.get();
+
+        if (!passwordEncoder.matches(request.getOtpCode(), otp.getOtpCode())) {
+            throw new BadCredentialsException("Invalid OTP entered");
+        }
+
+        otpRepository.delete(otp);
+
+        String hashedPassword = passwordEncoder.encode(request.getPassword());
+        user.setPassword(hashedPassword);
+        userRepository.save(user);
+    }
+
+
+
+
 
 }

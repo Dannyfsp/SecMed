@@ -65,8 +65,7 @@ public class OtpServiceImpl implements OtpService {
         if (!passwordEncoder.matches(verifyOtpRequest.getOtpCode(), otp.getOtpCode())) {
             throw new BadCredentialsException("Invalid OTP");
         }
-        otp.setOtpUsed(true);
-        otpRepository.save(otp);
+        otpRepository.delete(otp);
 
         User user = userEmail.get();
         user.setIsVerified(true);
