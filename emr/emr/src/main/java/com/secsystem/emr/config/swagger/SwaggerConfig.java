@@ -37,4 +37,4 @@ public class SwaggerConfig {
     }
 }
 
-//swagger-ui: http://localhost:8989/swagger-ui/index.html
+//swagger-ui: http://localhost:8080/swagger-ui/index.html

@@ -18,6 +18,7 @@ public class SignUpRequest {
     @NotEmpty(message = "The email address is required.")
     @Trimmed
     @UniqueEmail
+    @Lowercase
     private String email;
 
     @NotBlank(message = "First name is required")

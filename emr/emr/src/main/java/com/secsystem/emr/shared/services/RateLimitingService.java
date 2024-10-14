@@ -16,6 +16,7 @@ public class RateLimitingService {
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
 
     public boolean allowRequest(String apiKey) {
+        apiKey = "test";
         Bucket bucket = buckets.computeIfAbsent(apiKey, this::createNewBucket);
         return bucket.tryConsume(1);
     }
@@ -24,4 +25,5 @@ public class RateLimitingService {
         Bandwidth limit = Bandwidth.classic(10, Refill.smooth(10, Duration.ofMinutes(1)));
         return Bucket4j.builder().addLimit(limit).build();
     }
+
 }

@@ -5,6 +5,19 @@ spring:
     ansi:
       enabled: always
 
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 587
+    username: "6961ac672067ee"
+    password: "4c864f587f3462"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/emr_sec?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false}
     username: ${DB_USERNAME:root}
@@ -22,7 +35,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     format-sql: true
     show-sql: true
     open-in-view: true
@@ -39,6 +52,8 @@ server:
   shutdown: graceful
 
 management:
+  security:
+    enabled: false
   endpoints:
     web:
       exposure:
@@ -62,17 +77,6 @@ cloudinary:
       max-request-size: 5MB
       file-size-threshold: 2KB
 
-  mail:
-    host: sandbox.smtp.mailtrap.io
-    port: 2525
-    username: 6961ac672067ee
-    password: 4c864f587f3462
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
 
   devtools:
     restart:
@@ -82,4 +86,12 @@ cloudinary:
 
 api:
   prefix: /api/v1
+
+
+logging:
+  file:
+    name: ./src/var/tmp/mylog.log
+  level:
+    root: INFO
+    org.springframework.web: ERROR
 
