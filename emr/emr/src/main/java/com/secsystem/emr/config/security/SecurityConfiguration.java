@@ -30,6 +30,7 @@ public class SecurityConfiguration {
 
     private static final String[] WHITE_LIST_URL = {
             "/api/v1/auth/**",
+            "/api/v1/admin/**", //todo: Remove
             "/swagger-ui/**",
             "/v3/**",
             "/v2/api-docs",
