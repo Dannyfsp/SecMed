@@ -43,22 +43,7 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        GenericFilter filter = new GenericFilter();
-        if (email != null) filter.addFilter("email", email);
-
-        Pageable pageable = PageRequest.of(page, size);
-        Page<User> userPage = genericService.getFilteredData(filter, pageable, User.class);
-
-        List<UserResponseDto> userResponseDtos = userPage.getContent().stream().map(user ->
-                new UserResponseDto(
-                        user.getFirstName() + " " + user.getLastName(), // Concatenating first and last name
-                        user.getEmail(),
-                        user.getRole().getName().toString()
-                )
-        ).collect(Collectors.toList());
-
-        PagedResponse<UserResponseDto> pagedResponse = new PagedResponse<>(userPage, userResponseDtos);
-
+        PagedResponse<UserResponseDto> pagedResponse = adminService.getAllUsersPaginated(email, page, size);
         return ResponseHandler.responseBuilder("Users retrieved", HttpStatus.OK, pagedResponse);
     }
 
