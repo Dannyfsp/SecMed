@@ -23,13 +23,23 @@ public class UserVerificationAspect {
     public void checkIfUserVerified() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        // Check if the user is authenticated
         if (authentication != null && authentication.isAuthenticated()) {
             String email = authentication.getName();
-            User user = userService.findByEmail(email);
 
-            if (user == null || !user.getIsVerified()) {
-                throw new UnAuthorizedException("User is not verified");
+            // Ensure the email is not null before proceeding
+            if (email != null) {
+                User user = userService.findByEmail(email);
+
+                // Check if the user exists and if they are verified
+                if (user == null || user.getIsVerified() == null || !user.getIsVerified()) {
+                    throw new UnAuthorizedException("User is not verified");
+                }
+            } else {
+                throw new UnAuthorizedException("Authentication name (email) is null");
             }
+        } else {
+            throw new UnAuthorizedException("User is not authenticated");
         }
     }
 }

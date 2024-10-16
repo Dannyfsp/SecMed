@@ -1,15 +1,14 @@
 package com.secsystem.emr.user;
 
 
+import com.cloudinary.Cloudinary;
 import com.secsystem.emr.exceptions.ConflictException;
 import com.secsystem.emr.exceptions.CustomBadRequestException;
 import com.secsystem.emr.exceptions.EntityNotFoundException;
 import com.secsystem.emr.shared.dto.OtpRequest;
 import com.secsystem.emr.shared.generators.OtpGen;
-import com.secsystem.emr.shared.models.Otp;
-import com.secsystem.emr.shared.models.OtpEnum;
-import com.secsystem.emr.shared.models.Role;
-import com.secsystem.emr.shared.models.RoleEnum;
+import com.secsystem.emr.shared.models.*;
+import com.secsystem.emr.shared.repository.ImageRepository;
 import com.secsystem.emr.shared.repository.OtpRepository;
 import com.secsystem.emr.shared.repository.RoleRepository;
 import com.secsystem.emr.shared.services.EmailService;
@@ -19,6 +18,7 @@ import com.secsystem.emr.shared.services.RateLimitingService;
 import com.secsystem.emr.user.dto.request.*;
 import com.secsystem.emr.user.dto.response.UserLoginResponse;
 import com.secsystem.emr.user.dto.response.UserSignUpResponse;
+import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,8 +27,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -36,6 +42,8 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
+    private final Cloudinary cloudinary;
+    private final ImageRepository imageRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -46,7 +54,10 @@ public class UserServiceImpl implements UserService {
     private final OtpService otpService;
     private final OtpRepository otpRepository;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, EmailService emailService, RateLimitingService rateLimitingService, JwtService jwtService, OtpService otpService, OtpRepository otpRepository) {
+
+    public UserServiceImpl(Cloudinary cloudinary, ImageRepository imageRepository, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, EmailService emailService, RateLimitingService rateLimitingService, JwtService jwtService, OtpService otpService, OtpRepository otpRepository) {
+        this.cloudinary = cloudinary;
+        this.imageRepository = imageRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -86,18 +97,21 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(userToSave);
 
         String otpCode = OtpGen.generateSignUpOtp();
-
         String subject = "Please verify your email";
-        String text = "Your otp is  " + otpCode;
-
+        String emailTemplate = "userSignUpTemplate";
+        String message = otpCode;
         OtpRequest otpToSave = OtpRequest.builder()
                 .email(userToSave.getEmail())
                 .otpCode(passwordEncoder.encode(otpCode))
                 .purpose(OtpEnum.USER_REGISTRATION)
                 .build();
         otpService.saveUserOtp(otpToSave);
-        emailService.sendEmail(userToSave.getEmail(), subject, text);
-
+        try {
+            emailService.sendHtmlEmail(userToSave.getEmail(), subject, message, emailTemplate);
+        } catch (MessagingException e) {
+            logger.error("Failed to send email to {}: {}", userToSave.getEmail(), e.getMessage());
+            throw new RuntimeException("Email sending failed");
+        }
         return UserSignUpResponse.builder()
                 .email(savedUser.getEmail())
                 .role(savedUser.getRole().getName().toString())
@@ -193,8 +207,51 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public User updateUserProfile(UpdateUserRequest updateUserRequest, MultipartFile file, Principal principal) throws IOException {
+        Optional<User> userOptional = userRepository.findByEmail(principal.getName());
+        if (userOptional.isEmpty()) {
+            throw new EntityNotFoundException("User with this email does not exist");
+        }
+
+        User user = userOptional.get();
+
+        user.setFirstName(updateUserRequest.getFirstName());
+        user.setLastName(updateUserRequest.getLastName());
+
+        if (file != null && !file.isEmpty()) {
+            Map<String, String> params = new HashMap<>();
+            params.put("folder", "my-folder");
+            params.put("public_id", updateUserRequest.getFile().getOriginalFilename());
+
+            try {
+                File fileToSave = convertMultiPartToFile(file);
+
+                Map<String, Object> uploadResult = cloudinary.uploader().upload(fileToSave, params);
+
+                Image image = new Image();
+                image.setCloudinaryUrl(uploadResult.get("secure_url").toString());
+                image.setPublicId(uploadResult.get("public_id").toString());
+                imageRepository.save(image);
+
+                user.setProfilePic(image.getCloudinaryUrl());
+
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload image: " + e.getMessage(), e);
+            }
+        }
+
+        return userRepository.save(user);
+    }
 
 
 
+    private File convertMultiPartToFile(MultipartFile file) throws IOException {
+        File convertedFile = new File(file.getOriginalFilename());
+        FileOutputStream fos = new FileOutputStream(convertedFile);
+        fos.write(file.getBytes());
+        fos.close();
+        return convertedFile;
+    }
 
 }

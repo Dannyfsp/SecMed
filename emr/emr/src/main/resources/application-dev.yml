@@ -5,6 +5,7 @@ spring:
     ansi:
       enabled: always
 
+
   mail:
     host: sandbox.smtp.mailtrap.io
     port: 587

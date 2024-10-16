@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.validation.FieldError;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 
 import java.security.SignatureException;
@@ -33,6 +34,13 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleAccessDeniedException(AccessDeniedException ex) {
         logger.error("Access Denied: ", ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "You do not have permission to access this resource.");
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ProblemDetail handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+        logger.error("File upload size exceeded: ", ex);
+        String errorMessage = "The uploaded file exceeds the maximum allowed size.";
+        return ProblemDetail.forStatusAndDetail(HttpStatus.PAYLOAD_TOO_LARGE, errorMessage);
     }
 
     @ExceptionHandler(AuthenticationException.class)

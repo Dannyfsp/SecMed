@@ -17,6 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 @RestController
@@ -97,6 +100,18 @@ public class UserController {
             return ResponseHandler.responseBuilder("password reset successfully", HttpStatus.OK, null);
         }
     }
+
+    @PutMapping("/me")
+    @VerifiedUserOnly
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> updateUser(
+            @ModelAttribute UpdateUserRequest updateUserRequest,
+            @RequestParam(value = "file", required = false) MultipartFile file
+    ) throws IOException {
+        User updatedUser = userService.updateUserProfile(updateUserRequest, file, SecurityUtils.getAuthentication());
+        return ResponseHandler.responseBuilder("user updated successfully", HttpStatus.OK, updatedUser);
+    }
+
 
 
 

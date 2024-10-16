@@ -40,6 +40,9 @@ public class User implements UserDetails {
     @Column(nullable = false, name = "email")
     private String email;
 
+    @Column(nullable = true, name="profilePic")
+    private String profilePic;
+
     @Column(nullable = false, name = "password")
     @JsonIgnore
     private String password;
